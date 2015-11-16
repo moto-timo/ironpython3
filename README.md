@@ -8,6 +8,38 @@ and Python libraries, and other .NET languages can use Python code just as easil
 IronPython 3 targets Python 3, including the re-organized standard library, Unicode
 strings, and all of the other new features.
 
+## Current project status
+
+Continuous Integration is provided by [Travis-CI][travis] and [AppVeyor][appveyor].
+
+|  Windows   |  Linux/Mono  |
+|  :-------: |  :--------:  |
+|  [![Build status][win-badge]][win-project] | [![Build Status][mono-badge]][mono-project] |
+
+Static analysis is provided by [Coverity][coverity]. Code coverage is provided by [Coveralls.io][coveralls].
+
+| Static Analysis | Code Coverage |
+| :-------------: | :-----------: |
+| [![Static Analysis][coverity-badge]][coverity-project] | [![Coverage Status][coveralls-badge]][coveralls-project] |
+
+[travis]: https://travis-ci.org/
+[appveyor]: http://appveyor.com/
+[coverity]: https://scan.coverity.com/
+[coveralls]: https://coveralls.io/
+
+[win-project]: https://ci.appveyor.com/project/moto-timo/ironpython3
+[win-badge]: https://ci.appveyor.com/api/projects/status/jqby7nc3oioqo9a2?svg=true
+[mono-project]: https://travis-ci.org/moto-timo/ironpython
+[mono-badge]: https://travis-ci.org/moto-timo/ironpython3.svg?branch=continuous_integration
+
+[coverity-project]: https://scan.coverity.com/projects/7042
+[coverity-badge]: https://scan.coverity.com/projects/7042/badge.svg
+
+[coveralls-project]: https://coveralls.io/github/moto-timo/ironpython3?branch=master
+[coveralls-badge]: https://coveralls.io/repos/moto-timo/ironpython3/badge.svg?branch=continuous_integration&service=github
+
+Thanks to the [libgit2sharp](https://github.com/libgit2/libgit2sharp) project for a great [example](https://raw.githubusercontent.com/libgit2/libgit2sharp/vNext/README.md) of embedding the above badges.
+
 ## Installation
 Builds of IronPython 3 are not yet provided.
 
@@ -45,3 +77,4 @@ If you need to make changes to the DLR, you can point IronPython at your local D
 
 After making DLR changes, commit them, update the version, and release an updated NuGet.
 Then, update the `DlrVersion` property in `CurrentVersion.props`.
+
