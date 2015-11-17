@@ -1,3 +1,16 @@
 language: csharp
 script:
-  - make
+  - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then make ; fi
+
+addons:
+  coverity_scan:
+
+    # GitHub project metadata
+    project:
+      name: moto-timo/ironpython3
+      version: 0.1
+      description: Iron Python 3
+
+    build_command: make
+
+    branch_pattern: continuous_integration
