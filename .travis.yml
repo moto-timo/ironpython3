@@ -19,4 +19,4 @@ addons:
 
     build_command: make
 
-    branch_pattern: continuous_integration
+    branch_pattern: coverity_scan
