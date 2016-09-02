@@ -86,7 +86,7 @@ goto :exit
 
 :test-all
 pushd bin\Debug
-IronPythonTestConsole.exe IronPythonTest -format=nunit2
+IronPythonTestConsole.exe IronPythonTest -format:nunit2
 popd
 goto :exit
 
