@@ -85,7 +85,7 @@ artifacts:
 
   # make.cmd test-* creates a resulting *-result.xml file
   # pushing all *-result.xml files in build directory recursively
-  - path: '**\*-result.xml'
+  - path: '**\*result.xml'
 
 #  # pushing a single file
 #  - path: test.zip
