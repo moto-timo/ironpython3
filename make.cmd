@@ -74,7 +74,7 @@ goto :exit
 
 :test-ironpython
 pushd bin\Debug
-IronPythonTestConsole.exe IronPythonTest -include:IronPython -result:ironpython-result.xml
+IronPythonTestConsole.exe IronPythonTest -include:IronPython -result:ironpython-result.xml -format:nunit2
 popd
 goto :exit
 

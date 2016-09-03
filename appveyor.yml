@@ -70,7 +70,7 @@ build_script:
 
 # to run your custom scripts instead of automatic tests
 test_script:
-  - .\make.cmd test-all
+  - .\make.cmd test-ironpython
 
 # to run custom scripts after tests
 after_test:
