@@ -9,7 +9,7 @@
 #---------------------------------#
 
 # version format
-version: 3.0.0.{build}
+#version: 3.0.0.{build}
 
 # you can use {branch} name in version format too
 # version: 1.0.{build}-{branch}
@@ -33,7 +33,9 @@ image: Visual Studio 2015
 # scripts that are called at very beginning, before repo cloning
 init:
   - git config --global core.autocrlf input
-
+  - ps: $xml = Get-Content CurrentVersion.props
+  - ps: $major = Select-Xml "//Project[PropertyGroup/MajorVersion]" $xml
+  - ps: Update-AppveyorBuild-Version $major.0.0.0-$($env:APPVEYOR_BUILD_VERSION)
 # build cache to preserve files/folders between builds
 cache:
   - '%LocalAppData%\NuGet\Cache'
