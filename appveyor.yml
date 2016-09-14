@@ -54,12 +54,7 @@ nuget:
 
 # scripts to run before build
 before_build:
-  - ps: $xml = Get-Content CurrentVersion.props
-  - ps: $major = Select-Xml "//MajorVersion" $xml
-  - ps: $minor = Select-Xml "//MinorVersion" $xml
-  - ps: $micro = Select-Xml "//MicroVersion" $xml
-  - ps: $serial = Select-Xml "//ReleaseSerial" $xml
-  - ps: Update-AppveyorBuild -Version "$($major).$($minor).$($micro).$($serial)-$($env:APPVEYOR_BUILD_NUMBER)"
+  - ps: $xml = Get-Content CurrentVersion.props; $major = Select-Xml "//MajorVersion" $xml; $minor = Select-Xml "//MinorVersion" $xml; $micro = Select-Xml "//MicroVersion" $xml; $serial = Select-Xml "//ReleaseSerial" $xml; Update-AppveyorBuild -Version "$($major).$($minor).$($micro).$($serial)-$($env:APPVEYOR_BUILD_NUMBER)"
 
 # scripts to run *after* solution is built and *before* automatic packaging occurs (web apps, NuGet packages, Azure Cloud Services)
 before_package:
