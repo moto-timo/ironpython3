@@ -15,10 +15,11 @@
 # version: 1.0.{build}-{branch}
 
 # branches to build
-branches:
+#branches:
   # whitelist
-  only:
-    - master
+  # Setting this prevents PRs from being auto-built
+  #only:
+   # - master
 
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
@@ -71,7 +72,7 @@ build_script:
 
 # to run your custom scripts instead of automatic tests
 test_script:
-  - .\make.cmd test-ironpython
+  - .\make.cmd test-all
 
 # to run custom scripts after tests
 after_test:
@@ -127,12 +128,12 @@ artifacts:
 #---------------------------------#
 
 # on successful build
-#on_success:
-#  - do something
+on_success:
+  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\*\*result.xml))
 
 # on build failure
-#on_failure:
-#  - do something
+on_failure:
+  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\*\*result.xml))
 
 # after build failure or success
 #on_finish:
