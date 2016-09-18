@@ -75,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="nunitlite">
-      <HintPath>$(ReferenceDir)\NUnitLite.1.0.0\lib\$(ReferencedPlatform)\nunitlite.dll</HintPath>
+      <HintPath>$(ReferenceDir)\NUnitLite.3.4.1\lib\$(ReferencedPlatform)\nunitlite.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
