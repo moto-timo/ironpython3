@@ -55,6 +55,7 @@
     <Compile Include="Compiler\RunnableScriptCode.cs" />
     <Compile Include="Modules\unicodedata.cs" />
     <Compile Include="Modules\_ast.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\BuildInfo.Generated.cs" />
     <Compile Include="Properties\CurrentVersion.Generated.cs" />
     <Compile Include="Runtime\Binding\IPythonExpandable.cs" />
@@ -492,6 +493,7 @@
     <Content Include="Lib\__future__.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Program.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -503,6 +505,7 @@
   <ItemGroup>
     <None Include="IronPython.ruleset" />
     <EmbeddedResource Include="Modules\unicodedata\IPyUnicodeData.txt.gz" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <PolicyFile Include="policy.$(AssemblyName).config" />
@@ -512,8 +515,39 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>
-  <ItemGroup Condition="'$(ReferencedPlatform)' == 'V4'">
-    <Reference Include="System.Xaml" />
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.3.4.1\lib\net40\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="nunitlite, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnitLite.3.4.1\lib\net40\nunitlite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <HintPath>..\..\packages\Microsoft.Xaml.4.0.0.1\lib\PresentationCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <HintPath>..\..\packages\Microsoft.Xaml.4.0.0.1\lib\PresentationFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Design">
+      <HintPath>..\..\packages\Microsoft.Xaml.4.0.0.1\lib\System.Design.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <HintPath>..\..\packages\Microsoft.Xaml.4.0.0.1\lib\System.Xaml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="UIAutomationProvider">
+      <HintPath>..\..\packages\Microsoft.Xaml.4.0.0.1\lib\UIAutomationProvider.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <HintPath>..\..\packages\Microsoft.Xaml.4.0.0.1\lib\WindowsBase.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <Import Project="$(CSharpTargets)" />
   <Import Project="$(BeforeTargetFiles)" />

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NUnitLite.Runner;
+using NUnitLite;
 
 namespace IronPythonTest.Desktop {
     class Program {
@@ -50,7 +50,7 @@ namespace IronPythonTest.Desktop {
         //             in combination with the -include option also note that exclude takes priority
         //             over all includes
         static void Main(string[] args) {
-            new TextUI().Execute(args);
+            new AutoRun().Execute(args);
         }
     }
 }
