@@ -72,8 +72,8 @@ build_script:
 
 # to run your custom scripts instead of automatic tests
 test_script:
-  #- .\make.cmd test-all
-  - nunit3-console .\bin\Debug\IronPythonTest.dll
+  - .\make.cmd test-all
+  #- nunit3-console .\bin\Debug\IronPythonTest.dll
 
 # to run custom scripts after tests
 after_test:
