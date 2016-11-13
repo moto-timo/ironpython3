@@ -1,6 +1,6 @@
 @echo off
 setlocal
-set PATH=%PATH%;%WINDIR%\Microsoft.NET\Framework\v4.0.30319;%WINDIR%\Microsoft.NET\Framework\v3.5
+set PATH=%PATH%;%WINDIR%\Microsoft.NET\Framework\v4.0.30319
 
 :getopts
 if "%1"=="" (goto :default) else (goto :%1)
@@ -61,9 +61,6 @@ echo No target 'test'. Try 'test-smoke', 'test-ironpython', 'test-cpython', or '
 goto :exit
 
 :test-smoke
-pushd bin\v2Debug
-IronPythonTest.exe --where:Category==StandardCPython --result:smoke-result-net35.xml
-popd
 pushd bin\Debug
 IronPythonTest.exe --where:Category==StandardCPython --result:smoke-result-net40.xml
 popd
