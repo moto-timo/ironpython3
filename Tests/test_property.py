@@ -71,8 +71,7 @@ def test_metaclass():
         def myget(self): return 'hello'
         aaa = property(fget=myget)
 
-    class foo(object):
-        __metaclass__ = MyType
+    class foo(object, metaclass=MyType): pass
 
     AreEqual(foo.aaa, 'hello')
 
