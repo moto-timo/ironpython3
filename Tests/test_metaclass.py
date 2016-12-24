@@ -58,20 +58,17 @@ def test_modify():
         AreEqual(x.__class__.__name__, "D")
     
     for f in [ g_f_modify, g_c_modify ]:
-        class C(object):
-            __metaclass__ = f((New,), "D")
+        class C(object, metaclass=f((New,), "D")):
         _check(C)
         
-        class C:
-            __metaclass__ = f((New,), "D")
+        class C(metaclass=f((New,), "D"):
         _check(C)
         
-        class C(object):
-            __metaclass__ = f((Old,), "D")
+        class C(object, metaclass=f((Old,), "D")):
         _check(C)
 
         try:
-            class C: __metaclass__ = f((Old,), "D")
+            class C(metaclass=f((Old,), "D"):
         except TypeError: pass
         else: Fail("Should have thrown")
 
@@ -92,8 +89,7 @@ class dash_attributes(type):
         return super(dash_attributes, metaclass).__new__(metaclass, name, bases, new_dict)
 
 def test_dash_attribute():
-    class C(object):
-        __metaclass__ = dash_attributes
+    class C(object, metaclass=dash_attributes):
         def WriteLine(self, *arg): return 4
     
     x = C()
@@ -102,8 +98,7 @@ def test_dash_attribute():
 
 def test_basic():
     def try_metaclass(t):
-        class C(object):
-            __metaclass__ = t
+        class C(object, metaclass=t):
             def method(self): return 10
         
         x = C()
@@ -115,26 +110,25 @@ def test_basic():
     try_metaclass(sub_type1)
     
     ## subclassing
-    class C1(object):
-        __metaclass__ = g_c_modify()
-    class C2:
-        __metaclass__ = g_f_modify()
+    class C1(object, metaclass=g_c_modify()):
+        pass
+    class C2(metaclass=g_f_modify():
+        pass
 
-    # not defining __metaclass__
+    # not defining metaclass
     for C in [C1, C2]:
         class D(C): pass
         
         Assert(hasattr(D, "version"))
         AreEqual(D().version, 2.4)
     
-    # redefining __metaclass__
+    # redefining metaclass
     try:
-        class D(C1): __metaclass__ = dash_attributes
+        class D(C1, metaclass=dash_attributes): pass
     except TypeError: pass
     else: Fail("metaclass conflict expected")
     
-    class D(C2):
-        __metaclass__ = dash_attributes
+    class D(C2, metaclass=dash_attributes):
         def StartSomethingToday(self): pass
         
     Assert(hasattr(D, "version"))
@@ -145,20 +139,18 @@ def test_find_metaclass():
     class A2(object): pass
     AreEqual(A2.__class__, type)
     
-    class B1:
-        __metaclass__ = dash_attributes
-    class B2(object):
-        __metaclass__ = dash_attributes
+    class B1(metaclass=cash_attributes: pass
+    class B2(object, metaclass=dash_attributes): pass
 
-    global __metaclass__
-    __metaclass__ = lambda *args: 100
+    global metaclass
+    metaclass = lambda *args: 100
 
     class C1:
-        def __metaclass__(*args): return 200
+        def metaclass(*args): return 200
     AreEqual(C1, 200)
 
     class C2(object):
-        def __metaclass__(*args): return 200
+        def metaclass(*args): return 200
     AreEqual(C2, 200)
     
     class D1: pass
@@ -181,13 +173,13 @@ def test_find_metaclass():
                 def PythonMethod(self): pass
             Assert(hasattr(E, "python_method"))
     
-    del __metaclass__
+    del metaclass
     
     class F1: pass
     Assert(F1 != 100)
 
 
-global flag  # to track which __metaclass__'es get invoked
+global flag  # to track which metaclass'es get invoked
 flag = 0
 
 class sub_type1(type):
@@ -212,12 +204,9 @@ def test_conflict():
     global flag
     
     class C1(object): pass
-    class C2(object):
-        __metaclass__ = sub_type1
-    class C3(object):
-        __metaclass__ = sub_type2
-    class C4(object):
-        __metaclass__ = sub_type3
+    class C2(object, metaclass=sub_type1): pass
+    class C3(object, metaclass=sub_type2): pass
+    class C4(object, metaclass=sub_type3): pass
     
     flag = 0
     class D(C1, C2): pass
@@ -251,8 +240,7 @@ def test_conflict():
         
 def test_bad_choices():
     def create(x):
-        class C(object):
-            __metaclass__ = x
+        class C(object, metaclass=x): pass
     
     for x in [
                 #None,   # bug 364967
@@ -272,13 +260,12 @@ def test_metaclass_call_override():
         def __call__(self, *args):
             return args
     
-    class myclass(object):
-        __metaclass__ = mytype
+    class myclass(object, metaclass=mytpe): pass
         
     AreEqual(myclass(1,2,3), (1,2,3))
     
 def test_metaclass():
-    global __metaclass__, recvArgs
+    global metaclass, recvArgs
     
     # verify we can use a function as a metaclass in the dictionary
     recvArgs = None
@@ -286,56 +273,52 @@ def test_metaclass():
         global recvArgs
         recvArgs = args
         
-    class foo:
-        __metaclass__ = funcMeta
+    class foo(metaclass=funcMeta): pass
     
-    AreEqual(recvArgs, ('foo', (), {'__module__' : __name__, '__metaclass__' : funcMeta}))
+    AreEqual(recvArgs, ('foo', (metaclass=funcMeta), {'__module__' : __name__ }))
     
-    class foo(object):
-        __metaclass__ = funcMeta
+    class foo(object, metaclass=funcMeta): pass
     
-    AreEqual(recvArgs, ('foo', (object, ), {'__module__' : __name__, '__metaclass__' : funcMeta}))
+    AreEqual(recvArgs, ('foo', (object, metaclass=funcMeta), {'__module__' : __name__ }))
             
     
-    # verify setting __metaclass__ to default old-style type works
+    # verify setting metaclass to default old-style type works
     
     class classType: pass
-    classType = type(classType)     # get classObj for tests
-    __metaclass__ = classType
+    classType = type(classType, metaclass=classType)     # get classObj for tests
     class c: pass
     AreEqual(type(c), classType)
-    del(__metaclass__)
+    del(metaclass)
     
     
-    # verify setting __metaclass__ to default new-style type works
-    __metaclass__ = type
+    # verify setting metaclass to default new-style type works
+    metaclass = type
     class c: pass
     AreEqual(type(c), type)
-    del(__metaclass__)
+    del(metaclass)
     
     # try setting it a different way - by getting it from a type
     class c(object): pass
-    __metaclass__  = type(c)
+    metaclass  = type(c)
     class xyz: pass
     AreEqual(type(xyz), type(c))
-    del(__metaclass__)
+    del(metaclass)
     
-    # verify setting __metaclass__ at module scope to a function works
-    __metaclass__ = funcMeta
+    # verify setting metaclass at module scope to a function works
+    metaclass = funcMeta
     recvArgs = None
     class foo: pass
-    AreEqual(recvArgs, ('foo', (), {'__module__' : __name__}))  # note no __metaclass__ becauses its not in our dict
+    AreEqual(recvArgs, ('foo', (), {'__module__' : __name__}))  # note no metaclass becauses its not in our dict
     
-    # clean up __metaclass__ for other tests
-    del(__metaclass__)
+    # clean up metaclass for other tests
+    del(metaclass)
 
 def test_arguments():
     class MetaType(type):
         def __init__(cls, name, bases, dict):
             super(MetaType, cls).__init__(name, bases, dict)
 
-    class Base(object):
-        __metaclass__ = MetaType
+    class Base(object, metaclass=MetaType): pass
     
       
     class A(Base):

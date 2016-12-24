@@ -1334,8 +1334,7 @@ def test_slots():
         class foo(type):
             __slots__ = ['abc']
     
-        class bar(object):
-            __metaclass__ = foo
+        class bar(object, metaclass=foo): pass
     
     # complex slots
     
@@ -2182,8 +2181,7 @@ def test_nonstring_name():
         
         AreEqual(C.__module__, 3)
         
-        class D(object):
-            __metaclass__ = C
+        class D(object, metaclass=C): pass
             
         AreEqual(D.__module__, 3)
     finally:
@@ -2473,8 +2471,7 @@ def test_descriptor_meta_magic():
             setattr( cls,nm, o )
             setattr( cls.__class__,nm, o )
     
-    class A:
-        __metaclass__ = Ameta
+    class A(metclass=Ameta): pass
     
     class B( A ):
         A.createShared("cls2",1)
@@ -2986,8 +2983,7 @@ def test_descriptor_object_getattribute_interactions():
         ro_shadowed_class = readonly_data_desc(8)
         ro_shadowed_inst = readonly_data_desc(9)
     
-    class x(object):
-        __metaclass__ = meta
+    class x(object, metaclass=meta):
         def __init__(self):
             self.nondata_shadowed_inst = "nondata_inst"
             self.data_shadowed_inst = "data_inst"
@@ -3270,8 +3266,7 @@ def test_metaclass_base_search():
             setattr(cls, "attr_%s" % clsname, "attribute set on %s by MetaClass" % clsname)
             super(MetaClass, cls).__init__(clsname, bases, dict)
     
-    class Mixin(object):
-        __metaclass__ = MetaClass
+    class Mixin(object, metaclass=MetaClass): pass
     
     class Parent(object):
         pass
@@ -3333,8 +3328,7 @@ def test_metaclass_keyword_args():
        def __init__(cls, name, bases, dict):
           super(MetaType, cls).__init__(name, bases, dict)
     
-    class Base(object):
-        __metaclass__ = MetaType
+    class Base(object, metaclass=MetaType): pass
     
     class A(Base):
         def __init__(self, a, b='b', c=12, d=None, e=None):
@@ -3367,8 +3361,7 @@ def test_metaclass_getattribute():
         def __getattr__(self, name):
             return 42
     
-    class nc_ga(object):
-        __metaclass__ = mc
+    class nc_ga(object, metaclass=mc): pass
         
     AreEqual(nc_ga.x, 42)
 
@@ -3394,8 +3387,7 @@ def test_metaclass_multiple_bases():
             log.append('MT1')
             return super(MT1, cls).__new__(cls, name, bases, dict)
     
-    class D(object):
-        __metaclass__ = MT1
+    class D(object, metaclass=MT1): pass
     
     AreEqual(log, ['MT1'])
     
@@ -3404,8 +3396,7 @@ def test_metaclass_multiple_bases():
             log.append('MT2')
             return super(MT2, cls).__new__(cls, name, bases, dict)
     
-    class E(object):
-        __metaclass__ = MT2
+    class E(object, metaclass=MT2): pass
     
     AreEqual(log, ['MT1', 'MT2'])
     class T1(C, D): pass    
@@ -3472,8 +3463,7 @@ def test_metaclass_attribute_lookup():
         @Foo.setter
         def Foo(self, value): self._foo = value
     
-    class y:
-        __metaclass__ = x
+    class y(metaclass=x):
         def Foo(self): return 42
         _foo = 0
     
@@ -3483,8 +3473,7 @@ def test_metaclass_attribute_lookup():
     class x(type):
         Foo = 42
     
-    class y:
-        __metaclass__ = x
+    class y(metaclass=x):
         Foo = 0
         
     # non-data descriptors lookup in the normal class first

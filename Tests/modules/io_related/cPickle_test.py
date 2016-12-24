@@ -929,7 +929,7 @@ def test_carriage_return_round_trip():
 def test_metaclass_mixed_new_old_style():
     class mc(type): pass
     
-    class mo(object): __metaclass__ = mc
+    class mo(object, metaclass=mc): pass
     
     class c:
         def f(self): pass

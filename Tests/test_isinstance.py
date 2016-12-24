@@ -592,8 +592,7 @@ def test_metaclass_ctor_init():
             super(MetaType, cls).__init__(name, bases,dct)
             cls.xyz = 'abc'
             
-    class MetaInstance(object):
-        __metaclass__ = MetaType
+    class MetaInstance(object, metaclass=MetaType):
         def __init__(self):
             global instInit
             instInit = True
@@ -606,8 +605,7 @@ def test_metaclass_ctor_init():
     AreEqual(MetaInstance.someFunction(), "called someFunction")
     
     
-    class MetaInstance(object):
-        __metaclass__ = MetaType
+    class MetaInstance(object, metaclass=MetaType):
         def __init__(self, xyz):
             global instInit
             instInit = True
@@ -900,8 +898,7 @@ def test_class_property():
     
     class foo(type): pass
     
-    class bar(object):
-        __metaclass__ = foo
+    class bar(object, metaclass=foo): pass
         
     AreEqual(bar.__class__, foo)
 
@@ -919,15 +916,13 @@ def test_metaclass_order():
             
     class DerivedMeta(BaseMeta): pass
     
-    class A:
-        __metaclass__ = BaseMeta
+    class A(metaclass = BaseMeta): pass
         
     AreEqual(metaCalled, [BaseMeta])
     
     metaCalled = []
         
-    class B:
-        __metaclass__ = DerivedMeta
+    class B(metaclass=DerivedMeta): pass
         
     AreEqual(metaCalled, [DerivedMeta])
     

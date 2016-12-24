@@ -15,14 +15,14 @@
 
 '''
 This module consists of test cases which utilize the __clrtype__ method of 
-Python callables set as the __metaclass__ member of Python classes.  Doing
+Python callables set as the metaclass member of Python classes.  Doing
 this enables one to manually expose Python methods/attributes/classes directly
 to the CLR.  For example, a Python class member might be exposed as a static
 field on a CLR class.
 
 Most tests found in this module deal with various nuances of __clrtype__
 implementations and ensuring instances of Python classes using __clrtype__
-via the __metaclass__ member behave the same as normal Python objects.
+via the metaclass member behave the same as normal Python objects.
 
 There are also a few sanity tests used to ensure the primary purpose
 of __clrtype__ is actually met.  Namely, providing IronPython users the ability
@@ -62,7 +62,7 @@ TYPE_COUNTER = 0
 def test_sanity___clrtype___gets_called():
     '''
     Simple case.  Just make sure the __clrtype__ method gets called immediately 
-    after the __metaclass__ is set and we can call type.__clrtype__() from our
+    after the metaclass is set and we can call type.__clrtype__() from our
     __clrtype__ implementation.
     '''
     global called
@@ -74,8 +74,7 @@ def test_sanity___clrtype___gets_called():
             called = True
             return super(MyType, self).__clrtype__()
     
-    class X(object):
-        __metaclass__ = MyType
+    class X(object, metaclass=MyType): pass
 
     AreEqual(called, True)
     
@@ -115,8 +114,7 @@ def test_sanity_override_constructors():
                 newType = t.CreateType()
                 return newType
         
-        class X(object):
-            __metaclass__ = MyType
+        class X(object, metaclass=MyType):
             def __init__(self):
                 self.abc = 3
               
@@ -181,8 +179,7 @@ def test_sanity_static_dot_net_type():
             newType.GetField('$$type').SetValue(None, self)
             return newType
     
-    class MyCreatableDotNetType(object):
-        __metaclass__ = MyType
+    class MyCreatableDotNetType(object, metaclass=MyType):
         def __init__(self):
             self.abc = 3
 
@@ -256,8 +253,7 @@ def test_clrtype_returns_existing_python_types():
                 called = True
                 return x
         
-        class X(object):
-            __metaclass__ = MyType
+        class X(object, metaclass=MyType): pass
         
         AreEqual(called, True)
 
@@ -296,8 +292,7 @@ def test_clrtype_returns_existing_clr_types():
                 called = True
                 return x
         
-        class X(object):
-            __metaclass__ = MyType
+        class X(object, metaclass=MyType): pass
         
         AreEqual(called, True)
         
@@ -329,8 +324,7 @@ def test_interesting_type_implementations():
                 called = True
                 return x
         
-        class X(object):
-            __metaclass__ = MyType
+        class X(object, metaclass=MyType): pass
         
         AreEqual(called, True)
         
@@ -361,8 +355,7 @@ def test_type_constructor_overloads():
             called = True
             return IPT.SanityConstructorOverloads
     
-    class X(object):
-        __metaclass__ = MyType
+    class X(object, metaclass=MyType):
         #def __new__(self, *args, **kwargs):
         #    return object.__new__(self, *args, **kwargs)
         def __init__(self, *args, **kwargs):
@@ -430,8 +423,7 @@ def test_critical_custom_attributes():
             called = True
             return typebld.CreateType()
 
-    class X(object):
-        __metaclass__ = MyType
+    class X(object, metaclass=MyType): pass
 
 
     #Verification
@@ -519,8 +511,7 @@ def test_critical_clr_reflection():
             called = True
             return new_type
 
-    class X(object):
-        __metaclass__ = MyType
+    class X(object, metaclass=MyType): pass
 
 
     #Verification
@@ -578,8 +569,7 @@ def test_critical_parameterless_constructor():
             called = True
             return IPT.SanityParameterlessConstructor
     
-    class X(object):
-        __metaclass__ = MyType
+    class X(object, metaclass=MyType): pass
     
     AreEqual(called, True)
     AreEqual(IPT.SanityParameterlessConstructor.WhichConstructor, 0)
@@ -603,11 +593,10 @@ def test_clrtype_metaclass_characteristics():
         def __clrtype__(self):
             return type.__clrtype__(self)
 
-    class X(object):
-        __metaclass__ = T
+    class X(object, metaclass=T): pass
         
     AreEqual(X.__class__, T)
-    AreEqual(X.__metaclass__, X.__class__)
+    AreEqual(X.metaclass, X.__class__)
     AreEqual(X.__class__.__base__, type)
     AreEqual(X.__class__.__bases__, (type,))
     AreEqual(X.__class__.__doc__, '''This is our own type''')
@@ -617,7 +606,7 @@ def test_clrtype_metaclass_characteristics():
     Assert(not isinstance(x, T))
     Assert(not issubclass(X, T))
     AreEqual(x.__class__, X)
-    AreEqual(x.__metaclass__, T)
+    AreEqual(x.metaclass, T)
 
 
 ###NEGATIVE TEST CASES#################
@@ -662,8 +651,7 @@ def test_neg_clrtype_wrong_case():
             called = True
             return super(MyType, self).__clrtype__()
     
-    class X(object):
-        __metaclass__ = MyType
+    class X(object, metaclass=MyType): pass
 
     AreEqual(called, False)
 
@@ -685,8 +673,7 @@ def test_neg_clrtype_wrong_params():
             return super(MyType, self).__clrtype__()
     
     try:
-        class X(object):
-            __metaclass__ = MyType 
+        class X(object, metaclass=MyType): pass
         Fail("Bad __clrtype__ signature!")
        
     except TypeError, e:
@@ -705,8 +692,7 @@ def test_neg_clrtype_wrong_params():
             called = True
             return super(MyType, not_self).__clrtype__()
     
-    class X(object):
-        __metaclass__ = MyType 
+    class X(object, metaclass=MyType): pass
        
     AreEqual(called, True)
 
@@ -720,8 +706,7 @@ def test_neg_clrtype_wrong_params():
             return super(MyType, self).__clrtype__()
     
     try:
-        class X(object):
-            __metaclass__ = MyType 
+        class X(object metaclass=MyType): pass
         Fail("Bad __clrtype__ signature!")
        
     except TypeError, e:
@@ -756,8 +741,7 @@ def test_neg_clrtype_returns_nonsense_values():
                 return x
 
         try:
-            class X(object):
-                __metaclass__ = MyType
+            class X(object, metaclass=MyType): pass
             Fail("Arbitrary return values of __clrtype__ should not be allowed: " + str(x))
         except TypeError, e:
             AreEqual(e.message,
@@ -776,8 +760,7 @@ def test_neg_clrtype_returns_nonsense_values():
             return None
     
     try:
-        class X(object):
-            __metaclass__ = MyType
+        class X(object, metaclass=MyType): pass
         Fail("Arbitrary return values of __clrtype__ are not allowed: ", + str(x))
     except ValueError, e:
         AreEqual(e.message, "__clrtype__ must return a type, not None")
@@ -808,8 +791,7 @@ def test_neg_clrtype_raises_exceptions():
                 called = True
 
         try:
-            class X(object):
-                __metaclass__ = MyType
+            class X(object, metaclass=MyType): pass
             Fail("Exception was never thrown from __clrtype__: " + str(x))
         except type(x), e:
             if (hasattr(e, "message")):
@@ -840,8 +822,7 @@ def test_neg_type___new___args():
             return super(MyType, self).__clrtype__()
     
     try:
-        class X(object):
-            __metaclass__ = MyType
+        class X(object, metaclass=MyType): pass
         Fail("type.__new__ signature is wrong")
     except TypeError, e:
         AreEqual(e.message,
@@ -869,8 +850,7 @@ def test_neg_type_misc():
             called = True
             return IPT.NegativeEmpty
     
-    class X(object):
-        __metaclass__ = MyType
+    class X(object, metaclass=MyType): pass
 
     a = X()
     AreEqual(clr.GetClrType(type(a)), clr.GetClrType(IPT.NegativeEmpty))
@@ -881,8 +861,7 @@ def test_neg_type_misc():
             called = True
             return IPT.NegativeNoConstructor
 
-    class X(object):
-            __metaclass__ = MyType
+    class X(object, metaclass=MyType): pass
     
     a = X()
     AreEqual(clr.GetClrType(type(a)), clr.GetClrType(int))

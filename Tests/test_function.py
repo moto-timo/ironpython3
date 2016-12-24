@@ -662,8 +662,7 @@ AreEqual(D.classmeth.im_class, type)
 
 class MetaType(type): pass
 
-class D(object):
-	__metaclass__ = MetaType
+class D(object, metaclass=MetaType):
 	@classmethod
 	def classmeth(cls): pass
 	

@@ -1343,18 +1343,24 @@ namespace IronPython.Modules
         {
             private string _name;
             private PythonList _bases;
+            private PythonList _keywords;
+            private expr _starargs;
+            private expr _kwargs;
             private PythonList _body;
             private PythonList _decorator_list;
 
             public ClassDef() {
-                _fields = new PythonTuple(new[] { "name", "bases", "body", "decorator_list" });
+                _fields = new PythonTuple(new[] { "name", "bases", "keywords", "starargs", "kwargs", "body", "decorator_list" });
             }
 
-            public ClassDef(string name, PythonList bases, PythonList body, PythonList decorator_list,
+            public ClassDef(string name, PythonList bases, PythonList keywords, [Optional]expr starargs, [Optional]expr kwargs, PythonList body, PythonList decorator_list,
                 [Optional]int? lineno, [Optional]int? col_offset)
                 : this() {
                 _name = name;
                 _bases = bases;
+                _keywords = keywords;
+                _starargs = starargs;
+                _kwargs = kwargs;
                 _body = body;
                 _decorator_list = decorator_list;
                 _lineno = lineno;
@@ -1368,6 +1374,12 @@ namespace IronPython.Modules
                 _bases = PythonOps.MakeEmptyList(def.Bases.Count);
                 foreach (AstExpression expr in def.Bases)
                     _bases.Add(Convert(expr));
+                foreach (AstExpression expr in def.Keywords)
+                    _keywords.Add(Convert(expr));
+                if ( def.Starargs != null)
+                    _starargs = starargs;
+                if ( def.Kwargs != null)
+                    _kwargs = kwargs;
                 _body = ConvertStatements(def.Body);
                 if (def.Decorators != null) {
                     _decorator_list = PythonOps.MakeEmptyList(def.Decorators.Count);
@@ -1378,7 +1390,7 @@ namespace IronPython.Modules
             }
 
             internal override Statement Revert() {
-                ClassDefinition cd = new ClassDefinition(name, expr.RevertExprs(bases), RevertStmts(body));
+                ClassDefinition cd = new ClassDefinition(name, expr.RevertExprs(bases), expr.RevertExprs(keywords), expr.RevertExprs(starargs), expr.Revert(kwargs), RevertStmts(body));
                 if (decorator_list.Count != 0) 
                     cd.Decorators = expr.RevertExprs(decorator_list);
                 return cd;
@@ -1394,6 +1406,20 @@ namespace IronPython.Modules
                 set { _bases = value; }
             }
 
+            public PythonList keywords {
+                get { return _keywords;  }
+                set { _keywords = value; }
+            }
+
+            public expr starargs {
+                get { return _starargs; }
+                set { _starargs = value; }
+            }
+
+            public expr kwargs {
+                get { return _kwargs;  }
+                set { _kwargs = value; }
+            }
             public PythonList body {
                 get { return _body; }
                 set { _body = value; }
