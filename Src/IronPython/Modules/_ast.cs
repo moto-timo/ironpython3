@@ -1390,7 +1390,7 @@ namespace IronPython.Modules
             }
 
             internal override Statement Revert() {
-                ClassDefinition cd = new ClassDefinition(name, expr.RevertExprs(bases), expr.RevertExprs(keywords), expr.RevertExprs(starargs), expr.Revert(kwargs), RevertStmts(body));
+                ClassDefinition cd = new ClassDefinition(name, expr.RevertExprs(bases), expr.RevertExprs(keywords), expr.Revert(starargs), expr.Revert(kwargs), RevertStmts(body));
                 if (decorator_list.Count != 0) 
                     cd.Decorators = expr.RevertExprs(decorator_list);
                 return cd;

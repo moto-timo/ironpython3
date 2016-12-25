@@ -1295,18 +1295,18 @@ namespace IronPython.Runtime.Operations {
         }
 
         private static object FindMetaclass(CodeContext/*!*/ context, PythonTuple bases, PythonDictionary dict) {
-            // If dict['__metaclass__'] exists, it is used. 
+            // If dict['metaclass'] exists, it is used. 
             object ret;
-            if (dict.TryGetValue("__metaclass__", out ret) && ret != null) return ret;
+            if (dict.TryGetValue("metaclass", out ret) && ret != null) return ret;
 
             // Otherwise, if there is at least one base class, its metaclass is used
             return DynamicHelpers.GetPythonType(bases[0]);            
         }
 
-        public static object MakeClass(FunctionCode funcCode, Func<CodeContext, CodeContext> body, CodeContext/*!*/ parentContext, string name, object[] bases, string selfNames) {
+        public static object MakeClass(FunctionCode funcCode, Func<CodeContext, CodeContext> body, CodeContext/*!*/ parentContext, string name, object[] bases, object[] keywords, object starargs, object kwargs, string selfNames) {
             Func<CodeContext, CodeContext> func = GetClassCode(parentContext, funcCode, body);
 
-            return MakeClass(parentContext, name, bases, selfNames, func(parentContext).Dict);
+            return MakeClass(parentContext, name, bases, keywords, starargs, kwargs, selfNames, func(parentContext).Dict);
         }
 
         private static Func<CodeContext, CodeContext> GetClassCode(CodeContext/*!*/ context, FunctionCode funcCode, Func<CodeContext, CodeContext> body) {
@@ -1324,7 +1324,7 @@ namespace IronPython.Runtime.Operations {
             }
         }
 
-        internal static object MakeClass(CodeContext/*!*/ context, string name, object[] bases, string selfNames, PythonDictionary vars) {
+        internal static object MakeClass(CodeContext/*!*/ context, string name, object[] bases, object[] keywords, object starargs, object kwargs, string selfNames, PythonDictionary vars) {
             foreach (object dt in bases) {
                 if (dt is TypeGroup) {
                     object[] newBases = new object[bases.Length];

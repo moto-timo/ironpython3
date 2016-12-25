@@ -1062,19 +1062,19 @@ namespace IronPython.Compiler {
             string name = ReadName();
             if (name == null) {
                 // no name, assume there's no class.
-                return new ClassDefinition(null, new Expression[0], new Expression[0], new Expression[0], new Expression[0], ErrorStmt());
+                return new ClassDefinition(null, new Expression[0], new Expression[0], null, null, ErrorStmt());
             }
 
             Expression[] bases = new Expression[0];
             Expression[] keywords = new Expression[0];
-            Expression[] starargs = new Expression[0];
-            Expression[] kwargs = new Expression[0];
+            Expression starargs = null;
+            Expression kwargs = null;
             if (MaybeEat(TokenKind.LeftParenthesis)) {
                 List<Expression> l = ParseTestList();
 
                 if (l.Count == 1 && l[0] is ErrorExpression) {
                     // error handling, classes is incomplete.
-                    return new ClassDefinition(name, new Expression[0], new Expression[0], new Expression[0], new Expression[0], ErrorStmt());
+                    return new ClassDefinition(name, new Expression[0], new Expression[0], starargs, kwargs, ErrorStmt());
                 }
                 bases = l.ToArray();
                 Eat(TokenKind.RightParenthesis);

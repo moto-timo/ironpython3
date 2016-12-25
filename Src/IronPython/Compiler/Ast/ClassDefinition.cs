@@ -43,9 +43,9 @@ namespace IronPython.Compiler.Ast {
         private int _headerIndex;
         private readonly string _name;
         private Statement _body;
+        private readonly Expression _kwargs;
+        private readonly Expression _starargs;
         private readonly Expression[] _keywords;
-        private readonly Expression[] _starargs;
-        private readonly Expression[] _kwargs;
         private readonly Expression[] _bases;
         private IList<Expression> _decorators;
 
@@ -61,7 +61,7 @@ namespace IronPython.Compiler.Ast {
         private static MSAst.ParameterExpression _parentContextParam = Ast.Parameter(typeof(CodeContext), "$parentContext");
         private static MSAst.Expression _tupleExpression = MSAst.Expression.Call(AstMethods.GetClosureTupleFromContext, _parentContextParam);
 
-        public ClassDefinition(string name, Expression[] bases, Expression[] keywords, Expression[] starargs, Expression[] kwargs, Statement body) {
+        public ClassDefinition(string name, Expression[] bases, Expression[] keywords, Expression starargs, Expression kwargs, Statement body) {
             ContractUtils.RequiresNotNull(body, "body");
             ContractUtils.RequiresNotNullItems(bases, "bases");
 
@@ -94,11 +94,11 @@ namespace IronPython.Compiler.Ast {
             get { return _keywords; }
         }
 
-        public IList<Expression> Starargs {
+        public Expression Starargs {
             get { return _starargs; }
         }
 
-        public IList<Expression> Kwargs {
+        public Expression Kwargs {
             get { return _kwargs; }
         }
 
@@ -210,14 +210,8 @@ namespace IronPython.Compiler.Ast {
                     typeof(object),
                     ToObjectArray(_keywords)
                 ),
-                Ast.NewArrayInit(
-                    typeof(object),
-                    ToObjectArray(_starargs)
-                ),
-                Ast.NewArrayInit(
-                    typeof(object),
-                    ToObjectArray(_kwargs)
-                ),
+                _starargs,
+                _kwargs,
 
                 AstUtils.Constant(FindSelfNames())
             );
@@ -337,16 +331,6 @@ namespace IronPython.Compiler.Ast {
                 if (_keywords != null) {
                     foreach (Expression k in _keywords) {
                         k.Walk(walker);
-                    }
-                }
-                if (_starargs != null) {
-                    foreach (Expression sa in _starargs) {
-                        sa.Walk(walker);
-                    }
-                }
-                if (_kwargs != null) {
-                    foreach (Expression kwa in _kwargs) {
-                        kwa.Walk(walker);
                     }
                 }
                 if (_body != null) {
