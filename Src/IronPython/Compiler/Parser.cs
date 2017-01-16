@@ -1062,35 +1062,69 @@ namespace IronPython.Compiler {
             string name = ReadName();
             if (name == null) {
                 // no name, assume there's no class.
-                return new ClassDefinition(null, new Expression[0], ErrorStmt());
+                return new ClassDefinition(null, new Expression[0], new Expression[0], ErrorStmt());
             }
 
             Expression[] bases = new Expression[0];
+            Expression[] keywords = new Expression[0];
             if (MaybeEat(TokenKind.LeftParenthesis)) {
-                List<Expression> l = ParseTestList();
+                NameToken nm = PeekToken() as NameToken;
+                if (nm.Name == "metaclass") {
+                    // no base provided
+                    Expression e = ParseExpression();
+                    if (MaybeEat(TokenKind.Assign)) {
+                        NameExpression n = e as NameExpression;
+                        Arg keyword = FinishKeywordArgument(n);
+                        keywords[0] = keyword.Expression;
+                        bases[0] = new NameExpression("object");
+                    }
+                } else {
+                    List<Expression> l = ParseTestList();
 
-                if (l.Count == 1 && l[0] is ErrorExpression) {
-                    // error handling, classes is incomplete.
-                    return new ClassDefinition(name, new Expression[0], ErrorStmt());
+                    if (l.Count == 1 && l[0] is ErrorExpression) {
+                        // error handling, class is incomplete.
+                        return new ClassDefinition(name, new Expression[0], new Expression[0], ErrorStmt());
+                    }
+                    if (l.Count == 1 && ( l[0] is MemberExpression || l[0] is NameExpression ) ) {
+                        bases = l.ToArray();
+                    }
+                    if (l.Count > 1) {
+                        if (MaybeEat(TokenKind.Dot)) {
+                            throw new NotImplementedException();
+                        }
+                        if (MaybeEat(TokenKind.Assign)) {
+                            // We are done parsing bases, the rest should be keywords
+                            NameExpression n = l[l.Count - 1] as NameExpression;
+                            Arg keyword = FinishKeywordArgument(n);
+                            keywords = l.GetRange(l.Count - 1, 1).ToArray();
+                            bases = l.GetRange(0, l.Count - 1).ToArray();
+                        } else {
+                            // more than one base, but no metaclass
+                            bases = l.GetRange(0, l.Count - 1).ToArray();
+                        }
+                        if (MaybeEat(TokenKind.Comma)) {
+                            // maybe another keyword
+                            throw new NotImplementedException();
+                        }
+                    }
                 }
-                bases = l.ToArray();
-                Eat(TokenKind.RightParenthesis);
-            }
-            var mid = GetEnd();
+                    Eat(TokenKind.RightParenthesis);
+                }
+                var mid = GetEnd();
 
-            // Save private prefix
-            string savedPrefix = SetPrivatePrefix(name);
+                // Save private prefix
+                string savedPrefix = SetPrivatePrefix(name);
 
-            // Parse the class body
-            Statement body = ParseClassOrFuncBody();
+                // Parse the class body
+                Statement body = ParseClassOrFuncBody();
 
-            // Restore the private prefix
-            _privatePrefix = savedPrefix;
+                // Restore the private prefix
+                _privatePrefix = savedPrefix;
 
-            ClassDefinition ret = new ClassDefinition(name, bases, body);
-            ret.HeaderIndex =  mid;
-            ret.SetLoc(_globalParent, start, GetEnd());
-            return ret;
+                ClassDefinition ret = new ClassDefinition(name, bases, keywords, body);
+                ret.HeaderIndex = mid;
+                ret.SetLoc(_globalParent, start, GetEnd());
+                return ret;
         }
 
 

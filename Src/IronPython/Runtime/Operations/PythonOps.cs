@@ -1297,16 +1297,21 @@ namespace IronPython.Runtime.Operations {
         private static object FindMetaclass(CodeContext/*!*/ context, PythonTuple bases, PythonDictionary dict) {
             // If dict['__metaclass__'] exists, it is used. 
             object ret;
-            if (dict.TryGetValue("__metaclass__", out ret) && ret != null) return ret;
+            if (dict.ContainsKey("metaclass")) {
+                throw new NotImplementedException("metaclass not implemented");
+                ret = null;
+                return ret;
+                //&& ret != null) return ret;
+            }
 
             // Otherwise, if there is at least one base class, its metaclass is used
             return DynamicHelpers.GetPythonType(bases[0]);            
         }
 
-        public static object MakeClass(FunctionCode funcCode, Func<CodeContext, CodeContext> body, CodeContext/*!*/ parentContext, string name, object[] bases, string selfNames) {
+        public static object MakeClass(FunctionCode funcCode, Func<CodeContext, CodeContext> body, CodeContext/*!*/ parentContext, string name, object[] bases, object[] keywords, string selfNames) {
             Func<CodeContext, CodeContext> func = GetClassCode(parentContext, funcCode, body);
 
-            return MakeClass(parentContext, name, bases, selfNames, func(parentContext).Dict);
+            return MakeClass(parentContext, name, bases, keywords, selfNames, func(parentContext).Dict);
         }
 
         private static Func<CodeContext, CodeContext> GetClassCode(CodeContext/*!*/ context, FunctionCode funcCode, Func<CodeContext, CodeContext> body) {
@@ -1324,7 +1329,7 @@ namespace IronPython.Runtime.Operations {
             }
         }
 
-        internal static object MakeClass(CodeContext/*!*/ context, string name, object[] bases, string selfNames, PythonDictionary vars) {
+        internal static object MakeClass(CodeContext/*!*/ context, string name, object[] bases, object[] keywords, string selfNames, PythonDictionary vars) {
             foreach (object dt in bases) {
                 if (dt is TypeGroup) {
                     object[] newBases = new object[bases.Length];
@@ -1352,14 +1357,37 @@ namespace IronPython.Runtime.Operations {
 
             PythonTuple tupleBases = PythonTuple.MakeTuple(bases);
 
+            foreach (object kt in keywords) {
+                if (kt is PythonDictionary) {
+                    object[] newKeywords = new object[keywords.Length];
+                    for (int i = 0; i < keywords.Length; i++) {
+                        PythonDictionary kd = keywords[i] as PythonDictionary;
+                        if (kd != null) {
+                            //Type nonGenericType;
+                            if (kd.ContainsKey("metaclass")) {
+                                // call _build_class_ e.g.
+                                // get the metaclass and check for __prepare__
+                                throw new NotImplementedException("metaclass not implemented yet");
+                            }
+                            //if (!kd.TryGetNonGenericType(out nonGenericType)) {
+                            //    throw PythonOps.TypeError("cannot derive from open generic types " + Builtin.repr(context, tc).ToString());
+                            //}
+                            //newKeywords[i] = DynamicHelpers.GetPythonTypeFromType(nonGenericType);
+                        } else {
+                            newKeywords[i] = keywords[i];
+                        }
+                    }
+                    keywords = newKeywords;
+                    break;
+                }
+            }
             object metaclass = FindMetaclass(context, tupleBases, vars);
             if (metaclass == TypeCache.PythonType) {
                 return PythonType.__new__(context, TypeCache.PythonType, name, tupleBases, vars, selfNames);
             }
 
             // eg:
-            // def foo(*args): print args            
-            // __metaclass__ = foo
+            // def foo(*args, metaclass=foo): print args            
             // class bar: pass
             // calls our function...
             PythonContext pc = PythonContext.GetContext(context);

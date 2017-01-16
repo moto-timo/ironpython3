@@ -43,6 +43,7 @@ namespace IronPython.Compiler.Ast {
         private int _headerIndex;
         private readonly string _name;
         private Statement _body;
+        private Expression[] _keywords;
         private readonly Expression[] _bases;
         private IList<Expression> _decorators;
 
@@ -58,12 +59,13 @@ namespace IronPython.Compiler.Ast {
         private static MSAst.ParameterExpression _parentContextParam = Ast.Parameter(typeof(CodeContext), "$parentContext");
         private static MSAst.Expression _tupleExpression = MSAst.Expression.Call(AstMethods.GetClosureTupleFromContext, _parentContextParam);
 
-        public ClassDefinition(string name, Expression[] bases, Statement body) {
+        public ClassDefinition(string name, Expression[] bases, Expression[] keywords, Statement body) {
             ContractUtils.RequiresNotNull(body, "body");
             ContractUtils.RequiresNotNullItems(bases, "bases");
 
             _name = name;
             _bases = bases;
+            _keywords = keywords;
             _body = body;
         }
 
@@ -84,6 +86,9 @@ namespace IronPython.Compiler.Ast {
             get { return _bases; }
         }
 
+        public IList<Expression> Keywords {
+            get { return _keywords; }
+        }
         public Statement Body {
             get { return _body; }
         }
@@ -187,6 +192,10 @@ namespace IronPython.Compiler.Ast {
                 Ast.NewArrayInit(
                     typeof(object),
                     ToObjectArray(_bases)
+                ),
+                Ast.NewArrayInit(
+                    typeof(object),
+                    ToObjectArray(_keywords)
                 ),
                 AstUtils.Constant(FindSelfNames())
             );
@@ -301,6 +310,11 @@ namespace IronPython.Compiler.Ast {
                 if (_bases != null) {
                     foreach (Expression b in _bases) {
                         b.Walk(walker);
+                    }
+                }
+                if (_keywords != null) {
+                    foreach (Expression k in _keywords) {
+                        k.Walk(walker);
                     }
                 }
                 if (_body != null) {
