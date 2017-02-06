@@ -61,7 +61,7 @@ echo No target 'test'. Try 'test-smoke', 'test-ironpython', 'test-cpython', or '
 goto :exit
 
 :test-smoke
-if "%_flavour"=="" set _flavour=Release
+if "%_flavour%"=="" set _flavour=Release
 pushd "bin\v4%_flavour%"
 IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke-result-net40.xml
 popd
@@ -71,28 +71,28 @@ popd
 goto :exit
 
 :test-ironpython
-if "%_flavour"=="" set _flavour=Release
+if "%_flavour%"=="" set _flavour=Release
 pushd "bin\%_flavour%"
 IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-result.xml
 popd
 goto :exit
 
 :test-cpython
-if "%_flavour"=="" set _flavour=Release
+if "%_flavour%"=="" set _flavour=Release
 pushd "bin\%_flavour%"
 IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-result.xml
 popd
 goto :exit
 
 :test-all
-if "%_flavour"=="" set _flavour=Release
+if "%_flavour%"=="" set _flavour=Release
 pushd "bin\%_flavour%"
 IronPythonTest.exe --labels=All --result:all-result.xml
 popd
 goto :exit
 
 :test-custom
-if "%_flavour"=="" set _flavour=Release
+if "%_flavour%"=="" set _flavour=Release
 pushd "bin\%_flavour%"
 shift
 IronPythonTest.exe --labels=All --result:custom-result.xml %1 %2 %3 %4 %5 %6 %7 %8 %9
