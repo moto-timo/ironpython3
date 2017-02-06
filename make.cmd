@@ -82,6 +82,7 @@ popd
 goto :exit
 
 :test-all
+set _flavour=Release
 pushd "bin\%_flavour%"
 IronPythonTest.exe --labels=All --result:all-result.xml
 popd
